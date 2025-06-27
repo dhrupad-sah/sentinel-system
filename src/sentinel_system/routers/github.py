@@ -232,6 +232,31 @@ async def get_repository_labels():
         raise HTTPException(status_code=500, detail=f"Failed to fetch labels: {str(e)}")
 
 
+@router.post("/issues/{issue_number}/close")
+async def close_issue(issue_number: int, reason: str = "completed"):
+    """
+    Close a specific issue.
+    
+    Args:
+        issue_number: Issue number to close
+        reason: Reason for closing (completed, not_planned)
+    """
+    try:
+        github_service = GitHubService()
+        result = await github_service.close_issue(issue_number, reason)
+        
+        return {
+            "success": True,
+            "message": f"Issue #{issue_number} closed successfully",
+            "issue_number": issue_number,
+            "reason": reason,
+            "state": result["state"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to close issue: {str(e)}")
+
+
 @router.get("/status")
 async def get_github_status():
     """Get GitHub service status and configuration."""

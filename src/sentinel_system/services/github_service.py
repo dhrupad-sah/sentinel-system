@@ -261,4 +261,41 @@ class GitHubService:
             raise Exception(f"GitHub API error: {e.response.status_code}")
         except Exception as e:
             logger.error(f"Error creating pull request: {str(e)}")
+            raise
+    
+    async def close_issue(self, issue_number: int, reason: str = "completed") -> Dict[str, Any]:
+        """
+        Close a GitHub issue.
+        
+        Args:
+            issue_number: Issue number to close
+            reason: Reason for closing (completed, not_planned)
+            
+        Returns:
+            Updated issue data
+        """
+        try:
+            data = {
+                "state": "closed",
+                "state_reason": reason
+            }
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.patch(
+                    f"{self.base_url}/repos/{self.repo}/issues/{issue_number}",
+                    headers=self.headers,
+                    json=data
+                )
+                response.raise_for_status()
+                
+                issue_data = response.json()
+                logger.info(f"Closed issue #{issue_number} with reason: {reason}")
+                
+                return issue_data
+                
+        except httpx.HTTPStatusError as e:
+            logger.error(f"GitHub API error: {e.response.status_code} - {e.response.text}")
+            raise Exception(f"GitHub API error: {e.response.status_code}")
+        except Exception as e:
+            logger.error(f"Error closing issue #{issue_number}: {str(e)}")
             raise 

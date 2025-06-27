@@ -217,6 +217,8 @@ Once approved, I'll implement the solution and create a pull request.
 
 The solution has been implemented and is ready for review. The PR contains all necessary changes to resolve this issue.
 
+This issue is now being closed as the implementation is complete. The PR will be reviewed and merged separately.
+
 *Completed at {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}*
 """
                 
@@ -224,6 +226,9 @@ The solution has been implemented and is ready for review. The PR contains all n
                 
                 # Remove labels
                 await self.github_service.remove_label(issue_number, settings.GITHUB_APPROVED_LABEL)
+                
+                # Close the issue as completed
+                await self.github_service.close_issue(issue_number, "completed")
                 
                 logger.info(f"Successfully implemented solution for issue #{issue_number}, PR: {pr['html_url']}")
                 

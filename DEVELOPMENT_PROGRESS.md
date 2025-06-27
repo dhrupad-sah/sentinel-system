@@ -70,6 +70,7 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 - [x] Testing and validation of complete workflow
 - [x] Error handling improvements (git stashing, phase separation)
 - [x] Fixed premature code implementation during analysis phase
+- [x] Automatic issue closure after PR creation
 - [ ] Performance optimization
 - [ ] Enhanced logging and monitoring
 

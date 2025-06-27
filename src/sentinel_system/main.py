@@ -4,11 +4,17 @@ Sentinel System - Autonomous GitHub Issue Resolution System
 Main FastAPI application entry point.
 """
 
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .config import settings
+from .config import settings, configure_logging
 from .routers import github, scheduler, health
+
+# Configure logging as early as possible
+configure_logging()
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Sentinel System",
@@ -36,6 +42,7 @@ app.include_router(scheduler.router, prefix="/scheduler", tags=["scheduler"])
 @app.get("/")
 async def root():
     """Root endpoint with basic system information."""
+    logger.info("Root endpoint accessed.")
     return {
         "name": "Sentinel System",
         "version": "0.1.0",
@@ -48,12 +55,12 @@ async def root():
 @app.on_event("startup")
 async def startup_event():
     """Application startup event."""
-    print("🚀 Sentinel System starting up...")
-    print(f"📊 Debug mode: {settings.DEBUG}")
-    print(f"🎯 Target repository: {settings.GITHUB_REPO}")
+    logger.info("🚀 Sentinel System starting up...")
+    logger.info(f"📊 Debug mode: {settings.DEBUG}")
+    logger.info(f"🎯 Target repository: {settings.GITHUB_REPO}")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Application shutdown event."""
-    print("🛑 Sentinel System shutting down...") 
+    logger.info("🛑 Sentinel System shutting down...") 

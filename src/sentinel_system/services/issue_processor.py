@@ -103,17 +103,21 @@ class IssueProcessor:
             # Create proposal comment
             comment = f"""🤖 **Sentinel System - Issue Analysis & Proposal**
 
-## My Understanding
+## My Understanding & Proposed Solution
 I've analyzed issue #{issue_number} and here's my assessment:
 
 {proposal}
 
 ---
 
+**⚠️ IMPORTANT**: This is a PROPOSAL only. No code changes have been made yet.
+
 **Next Steps:**
 - 👍 If you approve this proposal, add the `{settings.GITHUB_APPROVED_LABEL}` label
 - 👎 If you want changes, remove the `{settings.GITHUB_PROPOSAL_LABEL}` label and add feedback
 - 🔄 I'll refine the proposal based on your feedback
+
+Once approved, I'll implement the solution and create a pull request.
 
 *Generated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}*
 """

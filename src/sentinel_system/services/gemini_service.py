@@ -50,11 +50,13 @@ class GeminiService:
             logger.info(f"Executing Gemini CLI command: {' '.join(cmd[:3])}...")  # Don't log full prompt for privacy
             
             # Execute the command asynchronously
+            # For analysis phase, run in current directory
+            # For implementation phase, this should run in the target repository
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                cwd=os.getcwd()  # Ensure we're in the correct directory
+                cwd=os.getcwd()
             )
             
             stdout, stderr = await process.communicate()
@@ -84,16 +86,24 @@ class GeminiService:
         Returns:
             AI analysis and proposed solution
         """
-        system_prompt = """You are an AI assistant helping to resolve GitHub issues. 
-Your task is to analyze the issue and propose a clear, actionable solution.
+        system_prompt = """You are an AI assistant helping to analyze GitHub issues and propose solutions.
+
+IMPORTANT: This is the ANALYSIS phase only. DO NOT make any code changes or modifications to files.
+
+Your task is to:
+1. Analyze and understand the issue
+2. Propose a clear solution approach
+3. Outline implementation steps
+4. Identify potential considerations or risks
 
 Please provide:
-1. Your understanding of the issue
-2. A proposed solution approach
-3. Key implementation steps
-4. Any potential considerations or risks
+- Your understanding of what the issue is asking for
+- A detailed solution proposal (but don't implement it yet)
+- Step-by-step implementation plan
+- Files that would need to be modified
+- Any potential risks or considerations
 
-Be specific and technical where appropriate. Focus on providing a solution that can be implemented."""
+Do NOT make any code changes during this analysis phase. You will implement the solution only after human approval."""
 
         user_prompt = f"""Please analyze this GitHub issue and propose a solution:
 

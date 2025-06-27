@@ -86,6 +86,11 @@ class GitService:
         try:
             logger.info(f"Creating branch '{branch_name}' from '{from_branch}'")
             
+            # Check if there are uncommitted changes
+            if await self.has_changes():
+                logger.warning("Uncommitted changes detected, stashing them")
+                await self._run_git_command("stash", "push", "-m", f"Auto-stash before creating branch {branch_name}")
+            
             # Ensure we're on the base branch and it's up to date
             await self._run_git_command("checkout", from_branch)
             await self._run_git_command("pull", "origin", from_branch)

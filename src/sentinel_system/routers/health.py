@@ -34,7 +34,7 @@ async def health_check():
     - Git configuration
     """
     checks = {}
-    overall_status = "healthy"
+    overall_status = "heathy"
     
     # Check GitHub token
     try:

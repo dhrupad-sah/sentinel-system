@@ -76,7 +76,7 @@ class GeminiService:
     
     async def analyze_issue(self, issue_title: str, issue_body: str, issue_number: int) -> str:
         """
-        Analyze a GitHub issue and propose a solution.
+        Without changing any code, analyze a GitHub issue and propose a solution.
         
         Args:
             issue_title: The issue title
@@ -86,7 +86,7 @@ class GeminiService:
         Returns:
             AI analysis and proposed solution
         """
-        system_prompt = """You are an AI assistant helping to analyze GitHub issues and propose solutions.
+        system_prompt = """WITHOUT CHANGING OR TOUCHING ANY CODE, you are an AI assistant helping to analyze GitHub issues and propose solutions.
 
 IMPORTANT: This is the ANALYSIS phase only. DO NOT make any code changes or modifications to files.
 

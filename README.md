@@ -80,6 +80,120 @@ Sentinel System is an autonomous tool that:
 - `POST /scheduler/stop` - Stop automated processing
 - `POST /scheduler/run-now` - Trigger immediate run
 
+## API Examples
+
+Here are `curl` examples for interacting with the main API endpoints. Replace `http://localhost:8000` with your service URL if it's different.
+
+**Note**: For endpoints requiring authentication, replace `YOUR_GITHUB_TOKEN` with your actual GitHub Personal Access Token. For webhook examples, `YOUR_WEBHOOK_SECRET` is the secret configured for your GitHub webhook.
+
+### Health & Status
+
+#### Get Health Status
+```bash
+curl -X GET "http://localhost:8000/health"
+```
+
+### GitHub Operations
+
+#### List GitHub Issues
+```bash
+curl -X GET "http://localhost:8000/github/issues?state=open&labels=ai-ready" \
+     -H "Authorization: Bearer YOUR_GITHUB_TOKEN"
+```
+
+#### Get Specific GitHub Issue
+```bash
+curl -X GET "http://localhost:8000/github/issues/123" \
+     -H "Authorization: Bearer YOUR_GITHUB_TOKEN"
+```
+
+#### Process GitHub Issue with AI
+```bash
+curl -X POST "http://localhost:8000/github/issues/123/process" \
+     -H "Authorization: Bearer YOUR_GITHUB_TOKEN"
+```
+
+#### Approve AI Proposal for Issue
+```bash
+curl -X POST "http://localhost:8000/github/issues/123/approve" \
+     -H "Authorization: Bearer YOUR_GITHUB_TOKEN"
+```
+
+#### Reject AI Proposal for Issue
+```bash
+curl -X POST "http://localhost:8000/github/issues/123/reject" \
+     -H "Authorization: Bearer YOUR_GITHUB_TOKEN"
+```
+
+### Scheduler Management
+
+#### Get Scheduler Status
+```bash
+curl -X GET "http://localhost:8000/scheduler/status"
+```
+
+#### Start Scheduler
+```bash
+curl -X POST "http://localhost:8000/scheduler/start"
+```
+
+#### Stop Scheduler
+```bash
+curl -X POST "http://localhost:8000/scheduler/stop"
+```
+
+#### Trigger Immediate Scheduler Run
+```bash
+curl -X POST "http://localhost:8000/scheduler/run-now"
+```
+
+### Webhook Endpoints
+
+#### GitHub Webhook (Simulated Event)
+This endpoint is typically called by GitHub. For testing, you can simulate a `labeled` event.
+Replace `YOUR_WEBHOOK_SECRET` with the secret you configured for your GitHub webhook.
+
+```bash
+# Example: Simulate an 'issues.labeled' event
+# This is a simplified payload. A real GitHub webhook payload is much larger.
+# The X-Hub-Signature-256 header is crucial for verification.
+# You'll need to generate a valid signature for your payload and secret.
+# For local testing without signature verification (if temporarily disabled in code):
+curl -X POST "http://localhost:8000/webhook/github" \
+     -H "Content-Type: application/json" \
+     -H "X-GitHub-Event: issues" \
+     -H "X-GitHub-Delivery: a1b2c3d4-e5f6-7890-1234-567890abcdef" \
+     -d '{
+           "action": "labeled",
+           "issue": {
+             "number": 123,
+             "title": "Example Issue",
+             "labels": [{"name": "ai-ready"}]
+           },
+           "label": {"name": "ai-ready"},
+           "repository": {
+             "full_name": "YOUR_REPO_OWNER/YOUR_REPO_NAME"
+           }
+         }'
+```
+
+#### Test Webhook Endpoint (for Development)
+This endpoint allows you to test the webhook processing logic without needing a full GitHub event.
+
+```bash
+curl -X POST "http://localhost:8000/webhook/test" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "action": "labeled",
+           "issue": {
+             "number": 123,
+             "title": "Test Issue",
+             "labels": [{"name": "ai-ready"}]
+           },
+           "label": {"name": "ai-ready"}
+         }'
+```
+
 ## Workflow
 
 1. **Issue Detection**: System monitors for issues with `ai-ready` label

@@ -14,7 +14,6 @@ from ..services.git_service import GitService
 
 router = APIRouter()
 
-
 class HealthStatus(BaseModel):
     """Health status response model."""
     status: str
@@ -22,7 +21,7 @@ class HealthStatus(BaseModel):
     checks: Dict[str, Any]
 
 
-@router.get("/", response_model=HealthStatus)
+@router.get("", response_model=HealthStatus)
 async def health_check():
     """
     Comprehensive health check endpoint.

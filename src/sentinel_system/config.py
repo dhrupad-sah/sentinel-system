@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     # GitHub settings
     GITHUB_TOKEN: str = Field(description="GitHub API token")
     GITHUB_REPO: str = Field(description="Target GitHub repository (owner/repo)")
+    GITHUB_WEBHOOK_SECRET: str = Field(
+        default="",
+        description="GitHub webhook secret for signature verification (optional)"
+    )
     GITHUB_ISSUE_LABEL: str = Field(
         default="ai-ready", 
         description="Label to identify issues ready for AI processing"
@@ -45,15 +49,8 @@ class Settings(BaseSettings):
         description="Gemini model to use (optional, CLI uses default if not specified)"
     )
     
-    # Scheduler settings
-    SCHEDULER_INTERVAL_MINUTES: int = Field(
-        default=10,
-        description="Interval in minutes to check for new issues"
-    )
-    SCHEDULER_ENABLED: bool = Field(
-        default=False,
-        description="Enable automatic issue processing scheduler"
-    )
+    # Webhook settings (scheduler removed in v1)
+    # Real-time processing via GitHub webhooks
     
     # Git settings
     GIT_BRANCH_PREFIX: str = Field(
@@ -65,16 +62,14 @@ class Settings(BaseSettings):
         description="Prefix for commit messages"
     )
     
+    LOG_LEVEL: str = Field(
+        default="INFO",
+        description="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)"
+    )
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
-
-
-LOG_LEVEL: str = Field(
-        default="INFO",
-        description="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)"
-    )
 
 
 # Global settings instance

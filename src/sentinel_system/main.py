@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings, configure_logging
-from .routers import github, scheduler, health
+from .routers import github, health, webhook
 
 # Configure logging as early as possible
 configure_logging()
@@ -36,7 +36,7 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(github.router, prefix="/github", tags=["github"])
-app.include_router(scheduler.router, prefix="/scheduler", tags=["scheduler"])
+app.include_router(webhook.router, prefix="/webhook", tags=["webhook"])
 
 
 @app.get("/")

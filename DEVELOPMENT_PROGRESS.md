@@ -5,39 +5,57 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 
 ## System Architecture
 
-### Core Workflow
-1. **Issue Discovery**: Scheduled process monitors GitHub repo for issues with specific label
+### Core Workflow (v1 - Event-Driven)
+1. **Issue Discovery**: GitHub webhooks trigger instantly when labels are added/removed
 2. **AI Analysis**: Gemini CLI analyzes issue and proposes solution 
 3. **Human Review Loop**: Human reviews/approves AI proposal via GitHub labels
-4. **Implementation**: AI implements approved solution
-5. **Git Workflow**: Auto-commit, branch creation, and PR submission
+4. **Implementation**: AI implements approved solution (triggered by webhook)
+5. **Git Workflow**: Auto-commit, branch creation, PR submission, and issue closure
 
 ## Version Planning
 
-### v0 - MVP (Current Target)
-**Scope**: Simple single-threaded approach
-- Single chat session for all issues (process one issue at a time)
-- Basic GitHub integration (issue fetching, commenting, labeling)
-- Simple human approval workflow
-- Basic git operations (commit, branch, push, PR)
-- Configuration via settings file
+### v0 - MVP (Completed ✅)
+**Scope**: Simple single-threaded approach with scheduler-based polling
+- ✅ Single chat session for all issues (process one issue at a time)
+- ✅ Basic GitHub integration (issue fetching, commenting, labeling)
+- ✅ Simple human approval workflow
+- ✅ Basic git operations (commit, branch, push, PR)
+- ✅ Configuration via settings file
+- ✅ Scheduler-based issue polling
+- ✅ Complete end-to-end workflow with automatic issue closure
 
 **Key Decisions for v0**:
 - ✅ Process issues sequentially (no parallel processing)
 - ✅ Single Gemini CLI chat session
 - ✅ Wait for current issue completion before picking next
 - ✅ Simple label-based approval system
+- ✅ Polling-based issue detection
 
-### v1 - Enhanced Features
-**Planned Enhancements**:
+### v1 - Event-Driven Architecture (Current Target 🔄)
+**Major Upgrade**: Replace polling with real-time webhooks
+- **🔄 GitHub Webhooks Integration**: Real-time event-driven processing
+  - Replace scheduler polling with instant webhook triggers
+  - Process issues immediately when labels are added/removed
+  - Webhook signature verification for security
+  - Background task processing for async handling
+- **🔄 System Cleanup**: Remove scheduler-related components
+  - Remove SchedulerService and scheduler router
+  - Keep manual trigger endpoints for testing/debugging
+  - Streamline codebase and reduce complexity
+- **🔄 Enhanced Performance**: Instant response times
+  - No more 1-10 minute delays from polling
+  - Immediate processing when `ai-ready` label added
+  - Instant implementation when `ai-approved` label added
+- **🔄 Production Readiness**: Improved reliability and efficiency
+  - Reduced API calls (no unnecessary polling)
+  - Better resource utilization
+  - Webhook retry handling via GitHub's built-in mechanism
+
+**Future v1 Enhancements**:
 - [ ] **Separate Chat Threads**: Each issue gets its own isolated Gemini chat session
-  - Prevents context bleeding between issues
-  - Enables parallel issue processing
-  - Better context preservation per issue
 - [ ] **Parallel Processing**: Handle multiple issues simultaneously
 - [ ] **Enhanced Error Handling**: Robust fallback mechanisms
 - [ ] **Metrics & Monitoring**: Track success rates, processing times
-- [ ] **Advanced Configuration**: More granular settings
 
 ### v2 - Advanced Features
 **Future Considerations**:
@@ -66,12 +84,26 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 - [x] Scheduler service implementation (automated processing)
 - [x] Updated health checks with service integration
 
-### In Progress
+### In Progress - v1 Webhook Implementation
 - [x] Testing and validation of complete workflow
 - [x] Error handling improvements (git stashing, phase separation)
 - [x] Fixed premature code implementation during analysis phase
-- [ ] Performance optimization
-- [ ] Enhanced logging and monitoring
+- [x] Automatic issue closure after PR creation
+- [x] **GitHub Webhooks Integration** ✅
+  - [x] Create webhook endpoint with signature verification
+  - [x] Implement label-based event filtering
+  - [x] Add background task processing for async handling
+  - [x] Handle `issues.labeled` and `issues.unlabeled` events
+  - [x] Add webhook test endpoint for debugging
+- [x] **System Cleanup** ✅
+  - [x] Remove SchedulerService and related components
+  - [x] Remove scheduler router and endpoints
+  - [x] Update configuration to remove scheduler settings
+  - [x] Clean up imports and dependencies
+- [ ] **Documentation Updates** 🔄
+  - [ ] Update README with webhook setup instructions
+  - [ ] Add webhook configuration examples
+  - [ ] Document GitHub webhook setup process
 
 ### Next Steps
 1. ✅ ~~Set up project structure~~
@@ -87,22 +119,33 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 
 ## Technical Decisions
 
-### GitHub Integration
-- Use GitHub REST API for issue management
-- Labels for workflow state management:
-  - `ai-ready` - Issues ready for AI processing
+### GitHub Integration (v1 - Webhook-Driven)
+- **GitHub Webhooks**: Real-time event processing for instant responses
+- **GitHub REST API**: For issue management, commenting, and labeling
+- **Webhook Events**: Listen for `issues.labeled` and `issues.unlabeled` events
+- **Security**: Webhook signature verification using GitHub secret
+- **Labels for workflow state management**:
+  - `ai-ready` - Issues ready for AI processing (triggers analysis)
   - `ai-proposal-pending` - AI has proposed solution, awaiting human review
-  - `ai-approved` - Human has approved AI's proposal
+  - `ai-approved` - Human has approved AI's proposal (triggers implementation)
   - `ai-working` - AI is currently implementing solution
+
+### Event Processing Architecture
+- **Async Processing**: Background tasks for webhook event handling
+- **Quick Response**: Return 200 OK immediately to prevent GitHub retries
+- **Idempotent Processing**: Handle duplicate webhooks gracefully
+- **Error Handling**: Robust error recovery with GitHub's built-in retry mechanism
 
 ### AI Integration
 - Gemini CLI already configured in target repository
 - No git cloning needed (works within existing repo)
 - AI adds comments to issues for transparency
+- Background task processing prevents blocking webhook responses
 
 ### Human Review Process
 - AI posts proposal as GitHub issue comment
-- Human reviews and either approves or requests changes
+- Human reviews and either approves or requests changes via labels
+- Webhook instantly triggers next phase when approval label added
 - Iterative refinement until approval received
 
 ## Configuration Requirements
@@ -120,5 +163,5 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 
 ---
 
-*Last Updated: [Current Date]*
-*Version: v0 Planning Phase* 
+*Last Updated: December 2024*
+*Version: v1 Implementation Phase - Webhook Integration* 

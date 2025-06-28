@@ -71,5 +71,41 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
+LOG_LEVEL: str = Field(
+        default="INFO",
+        description="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)"
+    )
+
+
 # Global settings instance
-settings = Settings() 
+settings = Settings()
+
+import logging
+import os
+
+def configure_logging():
+    """Configures logging for the application."""
+    log_level = os.environ.get("LOG_LEVEL", settings.LOG_LEVEL).upper()
+    numeric_log_level = getattr(logging, log_level, logging.INFO)
+
+    # Ensure the logs directory exists
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Configure root logger
+    logging.basicConfig(
+        level=numeric_log_level,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.StreamHandler(),  # Console output
+            logging.FileHandler(os.path.join(log_dir, "app.log"))  # File output
+        ]
+    )
+
+    # Set log level for specific loggers if needed
+    logging.getLogger("uvicorn").setLevel(numeric_log_level)
+    logging.getLogger("uvicorn.access").setLevel(numeric_log_level)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+
+    logging.info(f"Logging configured with level: {log_level}") 

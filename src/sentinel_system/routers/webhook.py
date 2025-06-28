@@ -93,7 +93,7 @@ async def github_webhook(
         
         # Verify webhook signature if secret is configured
         # Temporarily disabled for testing - re-enable in production
-        if False and hasattr(settings, 'GITHUB_WEBHOOK_SECRET') and settings.GITHUB_WEBHOOK_SECRET:
+        if hasattr(settings, 'GITHUB_WEBHOOK_SECRET') and settings.GITHUB_WEBHOOK_SECRET:
             if not x_hub_signature_256:
                 logger.warning("Webhook signature missing")
                 raise HTTPException(status_code=401, detail="Signature required")

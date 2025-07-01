@@ -1,13 +1,13 @@
 # Autonomous GitHub Issue Resolution System - Development Progress
 
 ## Project Overview
-An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, and creates PRs automatically with human oversight.
+An autonomous tool that picks GitHub issues, uses Claude Code CLI to work on them, and creates PRs automatically with human oversight.
 
 ## System Architecture
 
 ### Core Workflow (v1 - Event-Driven)
 1. **Issue Discovery**: GitHub webhooks trigger instantly when labels are added/removed
-2. **AI Analysis**: Gemini CLI analyzes issue and proposes solution 
+2. **AI Analysis**: Claude Code CLI analyzes issue and proposes solution 
 3. **Human Review Loop**: Human reviews/approves AI proposal via GitHub labels
 4. **Implementation**: AI implements approved solution (triggered by webhook)
 5. **Git Workflow**: Auto-commit, branch creation, PR submission, and issue closure
@@ -26,7 +26,7 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 
 **Key Decisions for v0**:
 - ✅ Process issues sequentially (no parallel processing)
-- ✅ Single Gemini CLI chat session
+- ✅ Single Claude Code CLI chat session
 - ✅ Wait for current issue completion before picking next
 - ✅ Simple label-based approval system
 - ✅ Polling-based issue detection
@@ -52,7 +52,7 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
   - Webhook retry handling via GitHub's built-in mechanism
 
 **Future v1 Enhancements**:
-- [ ] **Separate Chat Threads**: Each issue gets its own isolated Gemini chat session
+- [ ] **Separate Chat Threads**: Each issue gets its own isolated Claude Code chat session
 - [ ] **Parallel Processing**: Handle multiple issues simultaneously
 - [ ] **Enhanced Error Handling**: Robust fallback mechanisms
 - [ ] **Metrics & Monitoring**: Track success rates, processing times
@@ -68,6 +68,19 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 ## Current Development Status
 
 ### Completed
+- [x] **Docker & CI/CD Pipeline** ✅ (Latest Update)
+  - [x] Created GitHub Actions workflow for automated builds
+  - [x] Implemented automatic semantic versioning with tags (sentinel-v*)
+  - [x] Set up GitHub Container Registry publishing (ghcr.io/dhrupadsah/sentinel-system)
+  - [x] Created optimized Dockerfile with PDM support
+  - [x] Added .dockerignore for efficient builds
+  - [x] Configured workflow triggers for main branch and manual dispatch
+- [x] **AI Integration Migration** ✅
+  - [x] Migrated from Gemini CLI to Claude Code CLI
+  - [x] Updated all service references and imports
+  - [x] Updated configuration settings (CLAUDE_MODEL)
+  - [x] Updated documentation and examples
+  - [x] Verified Claude Code CLI integration working
 - [x] Project architecture design
 - [x] Development roadmap creation
 - [x] PDM project setup with dependencies
@@ -78,7 +91,7 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 - [x] Health check endpoints
 - [x] Environment configuration example
 - [x] Comprehensive README documentation
-- [x] Gemini CLI service implementation (using authenticated CLI)
+- [x] Claude Code CLI service implementation (using authenticated CLI)
 - [x] Issue processor service (complete workflow orchestration)
 - [x] Git service implementation (branch management, commits, pushes)
 - [x] Scheduler service implementation (automated processing)
@@ -108,14 +121,16 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 ### Next Steps
 1. ✅ ~~Set up project structure~~
 2. ✅ ~~Implement GitHub API integration~~
-3. ✅ ~~Complete Gemini CLI integration service~~
+3. ✅ ~~Complete Claude Code CLI integration service~~
 4. ✅ ~~Create basic issue processing workflow~~
 5. ✅ ~~Implement scheduler service~~
 6. ✅ ~~Add git operations service~~
-7. 🔄 Testing and refinement
-8. 🔄 Create environment file and configure settings
-9. 🔄 Test complete end-to-end workflow
-10. 🔄 Add monitoring and logging improvements
+7. ✅ ~~Set up Docker containerization and CI/CD pipeline~~
+8. 🔄 Testing and refinement
+9. 🔄 Create environment file and configure settings
+10. 🔄 Test complete end-to-end workflow
+11. 🔄 Add monitoring and logging improvements
+12. 🔄 Production deployment and testing
 
 ## Technical Decisions
 
@@ -137,7 +152,7 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 - **Error Handling**: Robust error recovery with GitHub's built-in retry mechanism
 
 ### AI Integration
-- Gemini CLI already configured in target repository
+- Claude Code CLI already configured in target repository
 - No git cloning needed (works within existing repo)
 - AI adds comments to issues for transparency
 - Background task processing prevents blocking webhook responses
@@ -152,8 +167,10 @@ An autonomous tool that picks GitHub issues, uses Gemini CLI to work on them, an
 - Target repository settings
 - GitHub API credentials
 - Issue label configurations
-- Gemini CLI setup verification
+- Claude Code CLI setup verification
 - Scheduling parameters
+- Docker deployment environment
+- GitHub Container Registry access
 
 ## Risk Mitigation
 - Human approval required before any code changes

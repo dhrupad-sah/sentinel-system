@@ -1,0 +1,118 @@
+name: Build and Publish Sentinel System
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'src/**'
+      - 'pyproject.toml'
+      - 'Dockerfile'
+      - '.github/workflows/publish-sentinel-system.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: dhrupadsah/sentinel-system
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 --match "sentinel-v*" 2>/dev/null || echo "sentinel-v1.0.0")
+          echo "latest_tag=${latest_tag}" >> $GITHUB_OUTPUT
+
+      - name: Bump version and push tag
+        id: tag_version
+        run: |
+          latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
+          latest_ver=${latest_tag#sentinel-v}
+          IFS='.' read -r major minor patch <<< "$latest_ver"
+          new_patch=$((patch + 1))
+
+          # Function to check if tag exists
+          tag_exists() {
+            git rev-parse "$1" >/dev/null 2>&1
+          }
+
+          # Find next available tag
+          while true; do
+            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              new_tag="sentinel-v$major.$minor.$new_patch"
+            else
+              new_tag="sentinel-v$major.$minor.$new_patch-dev"
+            fi
+
+            if ! tag_exists "$new_tag"; then
+              break
+            fi
+            new_patch=$((new_patch + 1))
+          done
+
+          echo "new_tag=${new_tag}" >> $GITHUB_OUTPUT
+          echo "Creating new tag: $new_tag"
+
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Create and push tag with error handling
+          if git tag -a $new_tag -m "Release $new_tag" && git push origin $new_tag; then
+            echo "Successfully created and pushed tag $new_tag"
+          else
+            echo "Failed to create or push tag"
+            exit 1
+          fi
+
+  build-and-publish:
+    needs: create-tag
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.create-tag.outputs.new_tag }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker image
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=,format=short
+            type=raw,value=latest
+            type=raw,value=${{ needs.create-tag.outputs.new_tag }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          build-args: |
+            IMAGE_VERSION=${{ env.VERSION }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Clean up Docker images
+        run: docker image prune -f

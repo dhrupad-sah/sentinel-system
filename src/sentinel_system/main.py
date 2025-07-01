@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Sentinel System",
-    description="Autonomous GitHub issue resolution system using Gemini CLI",
+    description="Autonomous GitHub issue resolution system using Claude Code CLI",
     version="0.1.0",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,

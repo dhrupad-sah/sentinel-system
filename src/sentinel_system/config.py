@@ -43,10 +43,10 @@ class Settings(BaseSettings):
         description="Label for issues currently being worked on by AI"
     )
     
-    # Gemini CLI settings (uses authenticated Google account)
-    GEMINI_MODEL: str = Field(
-        default="gemini-2.5-flash",
-        description="Gemini model to use (optional, CLI uses default if not specified)"
+    # Claude Code CLI settings (uses authenticated Claude account)
+    CLAUDE_MODEL: str = Field(
+        default="",
+        description="Claude model to use (optional, CLI uses default if not specified)"
     )
     
     # Webhook settings (scheduler removed in v1)

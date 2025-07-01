@@ -1,12 +1,12 @@
 # Sentinel System
 
-Autonomous GitHub issue resolution system using Gemini CLI and FastAPI.
+Autonomous GitHub issue resolution system using Claude Code CLI and FastAPI.
 
 ## Overview
 
 Sentinel System is an autonomous tool that:
 - 🔍 Monitors GitHub repositories for issues with specific labels
-- 🤖 Uses Gemini CLI to analyze and propose solutions
+- 🤖 Uses Claude Code CLI to analyze and propose solutions
 - 👥 Facilitates human review and approval process
 - ⚡ Automatically implements approved solutions
 - 🚀 Creates pull requests with the implemented changes
@@ -14,7 +14,7 @@ Sentinel System is an autonomous tool that:
 ## Features
 
 - **Automated Issue Detection**: Monitors GitHub repos for labeled issues
-- **AI-Powered Analysis**: Uses Gemini CLI for intelligent issue analysis
+- **AI-Powered Analysis**: Uses Claude Code CLI for intelligent issue analysis
 - **Human-in-the-Loop**: Requires human approval before implementation
 - **FastAPI Web Service**: RESTful API for monitoring and control
 - **Comprehensive Health Checks**: System status and dependency monitoring
@@ -26,7 +26,7 @@ Sentinel System is an autonomous tool that:
 
 - Python 3.10+
 - PDM (Python Dependency Management)
-- Gemini CLI installed and configured
+- Claude Code CLI installed and configured
 - GitHub repository with appropriate permissions
 - Git configured locally
 
@@ -48,7 +48,7 @@ Sentinel System is an autonomous tool that:
 3. **Required environment variables**:
    - `GITHUB_TOKEN`: GitHub personal access token
    - `GITHUB_REPO`: Target repository (owner/repo)
-   - `GEMINI_API_KEY`: Gemini API key
+   - `CLAUDE_MODEL`: Claude model (optional)
    - See `env.example` for all options
 
 4. **Start the service**:
@@ -197,7 +197,7 @@ curl -X POST "http://localhost:8000/webhook/test" \
 ## Workflow
 
 1. **Issue Detection**: System monitors for issues with `ai-ready` label
-2. **AI Analysis**: Gemini CLI analyzes issue and posts proposal comment
+2. **AI Analysis**: Claude Code CLI analyzes issue and posts proposal comment
 3. **Human Review**: Human reviews proposal and adds approval/rejection labels
 4. **Implementation**: AI implements approved solution
 5. **PR Creation**: System creates pull request with changes
@@ -212,9 +212,8 @@ GITHUB_TOKEN=your_token
 GITHUB_REPO=owner/repo
 GITHUB_ISSUE_LABEL=ai-ready
 
-# Gemini Settings  
-GEMINI_API_KEY=your_key
-GEMINI_MODEL=gemini-2.5-flash
+# Claude Settings
+CLAUDE_MODEL=claude-sonnet-4-20250514
 
 # Scheduler Settings
 SCHEDULER_INTERVAL_MINUTES=10

@@ -1,7 +1,7 @@
 """
-Gemini CLI service for Sentinel System.
+Claude Code CLI service for Sentinel System.
 
-Handles interaction with Gemini CLI using the authenticated Google account.
+Handles interaction with Claude Code CLI using the authenticated Claude account.
 """
 
 import subprocess
@@ -17,22 +17,22 @@ from ..config import settings
 logger = logging.getLogger(__name__)
 
 
-class GeminiService:
-    """Service for interacting with Gemini CLI."""
+class ClaudeService:
+    """Service for interacting with Claude Code CLI."""
     
     def __init__(self):
-        self.model = getattr(settings, 'GEMINI_MODEL', None)
+        self.model = getattr(settings, 'CLAUDE_MODEL', None)
     
     async def chat(self, prompt: str, system_prompt: Optional[str] = None) -> str:
         """
-        Send a chat prompt to Gemini CLI.
+        Send a chat prompt to Claude Code CLI.
         
         Args:
             prompt: The user prompt
             system_prompt: Optional system prompt for context
             
         Returns:
-            Gemini's response text
+            Claude's response text
         """
         try:
             # Combine system prompt and user prompt if system prompt is provided
@@ -41,13 +41,13 @@ class GeminiService:
                 full_prompt = f"System: {system_prompt}\n\nUser: {prompt}"
             
             # Build the command
-            cmd = ["gemini", "--prompt", full_prompt, "-y"]
+            cmd = ["claude", "-p", full_prompt, "--dangerously-skip-permissions"]
             
             # Add model if specified
             if self.model:
                 cmd.extend(["--model", self.model])
             
-            logger.info(f"Executing Gemini CLI command: {' '.join(cmd[:3])}...")  # Don't log full prompt for privacy
+            logger.info(f"Executing Claude Code CLI command: {' '.join(cmd[:3])}...")  # Don't log full prompt for privacy
             
             # Execute the command asynchronously
             # For analysis phase, run in current directory
@@ -63,15 +63,15 @@ class GeminiService:
             
             if process.returncode != 0:
                 error_msg = stderr.decode('utf-8') if stderr else "Unknown error"
-                logger.error(f"Gemini CLI command failed with return code {process.returncode}: {error_msg}")
-                raise Exception(f"Gemini CLI error: {error_msg}")
+                logger.error(f"Claude Code CLI command failed with return code {process.returncode}: {error_msg}")
+                raise Exception(f"Claude Code CLI error: {error_msg}")
             
             response = stdout.decode('utf-8').strip()
-            logger.info(f"Gemini CLI response received ({len(response)} characters)")
+            logger.info(f"Claude Code CLI response received ({len(response)} characters)")
             return response
             
         except Exception as e:
-            logger.error(f"Error executing Gemini CLI: {str(e)}")
+            logger.error(f"Error executing Claude Code CLI: {str(e)}")
             raise
     
     async def analyze_issue(self, issue_title: str, issue_body: str, issue_number: int) -> str:
@@ -213,7 +213,7 @@ Please provide a refined proposal that addresses the feedback."""
     
     async def check_availability(self) -> Dict[str, Any]:
         """
-        Check if Gemini CLI is available and working.
+        Check if Claude Code CLI is available and working.
         
         Returns:
             Status dictionary with availability information
@@ -221,7 +221,7 @@ Please provide a refined proposal that addresses the feedback."""
         try:
             # Try a simple test command
             process = await asyncio.create_subprocess_exec(
-                "gemini", "--version",
+                "claude", "--help",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
@@ -229,11 +229,11 @@ Please provide a refined proposal that addresses the feedback."""
             stdout, stderr = await process.communicate()
             
             if process.returncode == 0:
-                version = stdout.decode('utf-8').strip()
+                # Claude CLI doesn't have a --version flag, but --help should work
                 return {
                     "available": True,
-                    "version": version,
-                    "authenticated": True,  # If version works, likely authenticated
+                    "version": "Claude Code CLI",
+                    "authenticated": True,  # If help works, likely authenticated
                     "model": self.model
                 }
             else:
@@ -247,7 +247,7 @@ Please provide a refined proposal that addresses the feedback."""
         except FileNotFoundError:
             return {
                 "available": False,
-                "error": "Gemini CLI not found in PATH",
+                "error": "Claude Code CLI not found in PATH",
                 "model": self.model
             }
         except Exception as e:
@@ -255,4 +255,6 @@ Please provide a refined proposal that addresses the feedback."""
                 "available": False,
                 "error": str(e),
                 "model": self.model
-            } 
+            }
+
+ 

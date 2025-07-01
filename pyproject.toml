@@ -1,7 +1,7 @@
 [project]
 name = "sentinel-system"
 version = "0.1.0"
-description = "Autonomous GitHub issue resolution system using Gemini CLI"
+description = "Autonomous GitHub issue resolution system using Claude Code CLI"
 authors = [
     {name = "Dhrupad Sah", email = "thedhrupad@gmail.com"},
 ]

@@ -196,7 +196,7 @@ curl -X POST "http://localhost:8000/webhook/test" \
 
 ## Workflow
 
-1. **Issue Detection**: System monitors for issues with `ai-ready` label
+1. **Issue Detection**: System monitors for issues with `sentinel-analyze` label
 2. **AI Analysis**: Claude Code CLI analyzes issue and posts proposal comment
 3. **Human Review**: Human reviews proposal and adds approval/rejection labels
 4. **Implementation**: AI implements approved solution
@@ -210,7 +210,7 @@ Key configuration options in `.env`:
 # GitHub Settings
 GITHUB_TOKEN=your_token
 GITHUB_REPO=owner/repo
-GITHUB_ISSUE_LABEL=ai-ready
+GITHUB_ISSUE_LABEL=sentinel-analyze
 
 # Claude Settings
 CLAUDE_MODEL=claude-sonnet-4-20250514

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # Application settings
     DEBUG: bool = Field(default=True, description="Enable debug mode")
     ALLOWED_ORIGINS: List[str] = Field(
-        default=["http://localhost:3000", "http://localhost:8000"],
+        default=["*"],
         description="CORS allowed origins"
     )
     
@@ -27,20 +27,20 @@ class Settings(BaseSettings):
         description="GitHub webhook secret for signature verification (optional)"
     )
     GITHUB_ISSUE_LABEL: str = Field(
-        default="ai-ready", 
-        description="Label to identify issues ready for AI processing"
+        default="sentinel-analyze", 
+        description="Label to identify issues ready for AI analysis"
     )
     GITHUB_PROPOSAL_LABEL: str = Field(
-        default="ai-proposal-pending",
+        default="proposal-pending",
         description="Label for issues with AI proposals pending human review"
     )
     GITHUB_APPROVED_LABEL: str = Field(
-        default="ai-approved",
-        description="Label for issues approved by humans"
+        default="approved",
+        description="Label for issues approved by humans for implementation"
     )
     GITHUB_WORKING_LABEL: str = Field(
-        default="ai-working",
-        description="Label for issues currently being worked on by AI"
+        default="implementing",
+        description="Label for issues currently being implemented by AI"
     )
     
     # Claude Code CLI settings (uses authenticated Claude account)

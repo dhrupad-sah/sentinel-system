@@ -68,7 +68,13 @@ An autonomous tool that picks GitHub issues, uses Claude Code CLI to work on the
 ## Current Development Status
 
 ### Completed
-- [x] **Docker & CI/CD Pipeline** ✅ (Latest Update)
+- [x] **Docker Compose & Deployment** ✅ (Latest Update)
+  - [x] Created Docker Compose setup for easy deployment on any machine
+  - [x] Added comprehensive deployment guide (DEPLOYMENT.md)
+  - [x] Configured environment variable management via .env files
+  - [x] Set up health checks and monitoring for containers
+  - [x] Added production-ready deployment configuration
+- [x] **Docker & CI/CD Pipeline** ✅
   - [x] Created GitHub Actions workflow for automated builds
   - [x] Implemented automatic semantic versioning with tags (sentinel-v*)
   - [x] Set up GitHub Container Registry publishing (ghcr.io/dhrupadsah/sentinel-system)
@@ -126,11 +132,12 @@ An autonomous tool that picks GitHub issues, uses Claude Code CLI to work on the
 5. ✅ ~~Implement scheduler service~~
 6. ✅ ~~Add git operations service~~
 7. ✅ ~~Set up Docker containerization and CI/CD pipeline~~
-8. 🔄 Testing and refinement
-9. 🔄 Create environment file and configure settings
-10. 🔄 Test complete end-to-end workflow
-11. 🔄 Add monitoring and logging improvements
-12. 🔄 Production deployment and testing
+8. ✅ ~~Create Docker Compose deployment setup~~
+9. 🔄 Testing and refinement
+10. 🔄 Create environment file and configure settings
+11. 🔄 Test complete end-to-end workflow
+12. 🔄 Add monitoring and logging improvements
+13. 🔄 Production deployment and testing
 
 ## Technical Decisions
 
@@ -140,10 +147,10 @@ An autonomous tool that picks GitHub issues, uses Claude Code CLI to work on the
 - **Webhook Events**: Listen for `issues.labeled` and `issues.unlabeled` events
 - **Security**: Webhook signature verification using GitHub secret
 - **Labels for workflow state management**:
-  - `ai-ready` - Issues ready for AI processing (triggers analysis)
-  - `ai-proposal-pending` - AI has proposed solution, awaiting human review
-  - `ai-approved` - Human has approved AI's proposal (triggers implementation)
-  - `ai-working` - AI is currently implementing solution
+  - `sentinel-analyze` - Issues ready for AI analysis (triggers analysis)
+  - `proposal-pending` - AI has proposed solution, awaiting human review
+  - `approved` - Human has approved AI's proposal (triggers implementation)
+  - `implementing` - AI is currently implementing solution
 
 ### Event Processing Architecture
 - **Async Processing**: Background tasks for webhook event handling

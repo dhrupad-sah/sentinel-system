@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  sentinel-system:
+    image: ghcr.io/dhrupad-sah/sentinel-system:latest
+    ports:
+      - "8000:8000"
+    environment:
+      # GitHub Configuration (set these in .env file)
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPO=${GITHUB_REPO}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET:-}
+      
+    volumes:
+      # Mount logs directory for persistence
+      - ./logs:/project/logs
+      # Mount .env file
+      - ./.env:/project/.env:ro
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  default:
+    name: sentinel-network 

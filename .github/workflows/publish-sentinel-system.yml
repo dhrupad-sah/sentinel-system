@@ -12,7 +12,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: dhrupadsah/sentinel-system
+  IMAGE_NAME: dhrupad-sah/sentinel-system
 
 permissions:
   contents: write

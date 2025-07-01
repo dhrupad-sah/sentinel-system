@@ -9,7 +9,7 @@ import subprocess
 import os
 
 from ..config import settings
-from ..services.gemini_service import GeminiService
+from ..services.claude_service import ClaudeService
 from ..services.git_service import GitService
 
 router = APIRouter()
@@ -29,7 +29,7 @@ async def health_check():
     Checks:
     - Service status
     - GitHub API connectivity  
-    - Gemini CLI availability
+    - Claude Code CLI availability
     - Git configuration
     """
     checks = {}
@@ -46,27 +46,27 @@ async def health_check():
         checks["github_token"] = {"status": "error", "error": str(e)}
         overall_status = "degraded"
     
-    # Check Gemini CLI availability
+    # Check Claude Code CLI availability
     try:
-        gemini_service = GeminiService()
-        gemini_status = await gemini_service.check_availability()
+        claude_service = ClaudeService()
+        claude_status = await claude_service.check_availability()
         
-        if gemini_status["available"]:
-            checks["gemini_cli"] = {
+        if claude_status["available"]:
+            checks["claude_cli"] = {
                 "status": "ok",
                 "available": True,
-                "version": gemini_status.get("version", "unknown"),
-                "authenticated": gemini_status.get("authenticated", False)
+                "version": claude_status.get("version", "unknown"),
+                "authenticated": claude_status.get("authenticated", False)
             }
         else:
-            checks["gemini_cli"] = {
+            checks["claude_cli"] = {
                 "status": "error",
                 "available": False,
-                "error": gemini_status.get("error", "Unknown error")
+                "error": claude_status.get("error", "Unknown error")
             }
             overall_status = "degraded"
     except Exception as e:
-        checks["gemini_cli"] = {"status": "error", "available": False, "error": str(e)}
+        checks["claude_cli"] = {"status": "error", "available": False, "error": str(e)}
         overall_status = "degraded"
     
     # Check Git configuration

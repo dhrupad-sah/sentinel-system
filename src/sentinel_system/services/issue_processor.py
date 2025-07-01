@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 
 from .github_service import GitHubService
-from .gemini_service import GeminiService
+from .claude_service import ClaudeService
 from .git_service import GitService
 from ..config import settings
 
@@ -21,7 +21,7 @@ class IssueProcessor:
     
     def __init__(self):
         self.github_service = GitHubService()
-        self.gemini_service = GeminiService()
+        self.claude_service = ClaudeService()
         self.git_service = GitService()
     
     async def process_issue(self, issue_number: int) -> Dict[str, Any]:
@@ -98,7 +98,7 @@ class IssueProcessor:
             logger.info(f"Analyzing issue #{issue_number}")
             
             # Get AI analysis and proposal
-            proposal = await self.gemini_service.analyze_issue(issue_title, issue_body, issue_number)
+            proposal = await self.claude_service.analyze_issue(issue_title, issue_body, issue_number)
             
             # Create proposal comment
             comment = f"""🤖 **Sentinel System - Issue Analysis & Proposal**
@@ -168,7 +168,7 @@ Once approved, I'll implement the solution and create a pull request.
             await self.git_service.create_branch(branch_name)
             
             # Get AI to implement the solution
-            implementation = await self.gemini_service.implement_solution(
+            implementation = await self.claude_service.implement_solution(
                 issue_title, issue_body, approved_proposal, issue_number
             )
             
@@ -285,7 +285,7 @@ After analyzing the issue and attempting implementation, no code changes were re
             previous_proposal = "Previous proposal from earlier analysis"
             
             # Get refined proposal
-            refined_proposal = await self.gemini_service.refine_proposal(
+            refined_proposal = await self.claude_service.refine_proposal(
                 issue_title, issue_body, previous_proposal, feedback, issue_number
             )
             
